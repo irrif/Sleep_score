@@ -455,7 +455,7 @@ def plot_models_metrics_seaborn(models_metrics: dict = None, models_list: list =
 
 
 
-def residuals_analysis(df_residuals, x_var) -> None:
+def residuals_analysis(df_residuals: pd.DataFrame = None, x_var: str = None, train_test: str = 'train') -> None:
     """
     Scatterplot of interest variable vs. Score, with different residuals threshold.
     Histplot of interest variable.
@@ -466,19 +466,20 @@ def residuals_analysis(df_residuals, x_var) -> None:
         DataFrame that contains, the interest variable (x_var), the target, and the residuals.
     * x_var : str
         String that represents the interest variable.
-
+    * train_test : str
+        Train or test residuals
     Returns :
     ---------
     None
 
     Examples :
     ----------
-    >>> residuals_analysis(df_residuals, 'Sleep_duration')
+    >>> residuals_analysis(df_residuals, 'Sleep_duration', 'train')
     """
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
 
     sns.scatterplot(
-        data=df_residuals.loc[abs(df_residuals['train_residuals']) >= 20],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']) >= 20],
         x=x_var,
         y='Score',
         color='red',
@@ -487,7 +488,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
     )
 
     sns.scatterplot(
-        data=df_residuals.loc[abs(df_residuals['train_residuals']).between(10, 20, 'left')],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']).between(10, 20, 'left')],
         x=x_var,
         y='Score',
         color='orange',
@@ -496,7 +497,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
     )
 
     sns.scatterplot(    
-        data=df_residuals.loc[abs(df_residuals['train_residuals']) < 10],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']) < 10],
         x=x_var,
         y='Score',
         label='normal errors',
@@ -505,7 +506,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
     )
 
     sns.histplot(
-        data=df_residuals.loc[abs(df_residuals['train_residuals']) >= 20],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']) >= 20],
         x=x_var,
         kde=True,
         color='red',
@@ -514,7 +515,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
     )
 
     sns.histplot(
-        data=df_residuals.loc[abs(df_residuals['train_residuals']).between(10, 20, 'left')],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']).between(10, 20, 'left')],
         x=x_var,
         kde=True,
         color='orange',
@@ -523,7 +524,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
     )
 
     sns.histplot(
-        data=df_residuals.loc[abs(df_residuals['train_residuals']) < 10],
+        data=df_residuals.loc[abs(df_residuals[f'{train_test}_residuals']) < 10],
         x=x_var,
         kde=True,
         label='all residuals',
@@ -531,7 +532,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
         ax=axs[1]   
     )
 
-    fig.suptitle(f"Residuals analysis of {x_var}")
+    fig.suptitle(f"{train_test} residuals analysis of {x_var}")
 
     plt.legend()
     plt.show()
