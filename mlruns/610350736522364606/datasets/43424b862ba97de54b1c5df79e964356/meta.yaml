@@ -1,0 +1,31 @@
+digest: 2dce78bf
+name: Sleeping score
+profile: '{"num_rows": 382, "num_elements": 11842}'
+schema: '{"mlflow_colspec": [{"type": "double", "name": "Sleep_duration", "required":
+  false}, {"type": "double", "name": "Bedtime", "required": false}, {"type": "double",
+  "name": "Type", "required": false}, {"type": "double", "name": "Activity_distance",
+  "required": false}, {"type": "double", "name": "Activity_calories", "required":
+  false}, {"type": "double", "name": "Duration", "required": false}, {"type": "double",
+  "name": "Activity_average_heart_rate", "required": false}, {"type": "double", "name":
+  "Activity_maximum_heart_rate", "required": false}, {"type": "double", "name": "Aerobic_TE",
+  "required": false}, {"type": "double", "name": "Average_running_cadence", "required":
+  false}, {"type": "double", "name": "Maximum_running_cadence", "required": false},
+  {"type": "double", "name": "Average_pace", "required": false}, {"type": "double",
+  "name": "Best_pace", "required": false}, {"type": "double", "name": "Maximum_temperature",
+  "required": false}, {"type": "double", "name": "Activity_average_respiratory_frequency",
+  "required": false}, {"type": "double", "name": "Activity_minimum_respiratory_frequency",
+  "required": false}, {"type": "double", "name": "Activity_maximum_respiratory_frequency",
+  "required": false}, {"type": "double", "name": "Travel_time", "required": false},
+  {"type": "double", "name": "Elapsed_time", "required": false}, {"type": "double",
+  "name": "Minimum_altitude", "required": false}, {"type": "double", "name": "Maximum_altitude",
+  "required": false}, {"type": "double", "name": "Highest_HR", "required": false},
+  {"type": "double", "name": "Active_calories", "required": false}, {"type": "double",
+  "name": "Resting_calories", "required": false}, {"type": "double", "name": "Total_calories",
+  "required": false}, {"type": "double", "name": "Awake_time", "required": false},
+  {"type": "double", "name": "N_activities", "required": false}, {"type": "double",
+  "name": "Total_duration", "required": false}, {"type": "double", "name": "Total_distance",
+  "required": false}, {"type": "double", "name": "Total_aerobic_TE", "required": false},
+  {"type": "double", "name": "Score", "required": false}]}'
+source: '{"tags": {"mlflow.user": "flori", "mlflow.source.name": "c:\\Users\\flori\\anaconda3\\envs\\ml_py312\\Lib\\site-packages\\ipykernel_launcher.py",
+  "mlflow.source.type": "LOCAL"}}'
+source_type: code

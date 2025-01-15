@@ -1,0 +1,16 @@
+artifact_uri: mlflow-artifacts:/610350736522364606/db0c1205e2ff4ef280a8203e96e395a3/artifacts
+deleted_time: 1735379668372
+end_time: 1735379625466
+entry_point_name: ''
+experiment_id: '610350736522364606'
+lifecycle_stage: deleted
+run_id: db0c1205e2ff4ef280a8203e96e395a3
+run_name: baseline
+run_uuid: db0c1205e2ff4ef280a8203e96e395a3
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1735379625326
+status: 4
+tags: []
+user_id: flori
