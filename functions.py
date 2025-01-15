@@ -361,6 +361,100 @@ def plot_models_metrics(models_metrics: dict = None, models_list: list = None):
     fig.show()
 
 
+def plot_models_metrics_seaborn(models_metrics: dict = None, models_list: list = None):
+    """
+    Create a scatter plot comparing train and test RMSE means with color-coding based on model types.
+
+    Inputs:
+    --------
+    * models_metrics : dict
+        Dictionary of model metrics.
+    * models_list : list
+        List of substrings representing model categories (e.g., ["lin_reg", "rf", "gboost"]).
+    """
+    # Map model substrings to their full names and colors
+    model_mapping = {
+        "baseline": ("Linear Regression", "blue"),
+        "lin_reg": ("Linear Regression", "blue"),
+        "rf": ("Random Forest", "green"),
+        "gboost": ("Gradient Boosting", "orange")
+    }
+
+    # Assign a color and label to each model based on its name
+    def get_model_info(model_name):
+        for key in models_list:
+            if key in model_name:
+                return model_mapping[key]
+        return ("Other", "gray")  # Default for unmatched models
+
+    # Extract data and build DataFrame
+    models = []
+    train_rmse_means = []
+    test_rmse_means = []
+    categories = []
+    colors = []
+
+    for model, metrics in models_metrics.items():
+        models.append(model)
+        train_rmse_means.append(metrics['train_rmse_mean'])
+        test_rmse_means.append(metrics['test_rmse_mean'])
+        
+        # Get category and color
+        category, color = get_model_info(model)
+        categories.append(category)
+        colors.append(color)
+
+    df = pd.DataFrame({
+        'model': models,
+        'train_rmse_mean': train_rmse_means,
+        'test_rmse_mean': test_rmse_means,
+        'category': categories,
+        'color': colors
+    })
+
+    # Set Seaborn theme
+    sns.set_theme(style="whitegrid")
+
+    # Create the scatter plot
+    plt.figure()
+    scatter = sns.scatterplot(
+        data=df,
+        x="test_rmse_mean",
+        y="train_rmse_mean",
+        hue="category",  # Use categories for color
+        palette={cat: col for cat, col in model_mapping.values()},  # Map colors
+        style="category",  # Optional: different markers for categories
+        s=100  # Marker size
+    )
+
+    # Add annotations for model names
+    for i, row in df.iterrows():
+        plt.text(
+            row["test_rmse_mean"] + 0.02,  # Slight offset to avoid overlap
+            row["train_rmse_mean"] - 0.1,
+            row["model"],
+            fontsize=9,
+            ha="left"
+        )
+
+    # Add diagonal line (y = x)
+    x_range = np.linspace(df["test_rmse_mean"].min(), df["test_rmse_mean"].max(), 100)
+    plt.plot(x_range, x_range, linestyle="--", color="black", label="Diagonal (y=x)")
+
+    # Set axis labels and title
+    plt.xlabel("Test RMSE Mean", fontsize=12)
+    plt.ylabel("Train RMSE Mean", fontsize=12)
+    plt.title("Train vs Test RMSE Means", fontsize=14)
+
+    # Show legend
+    plt.legend(title="Model Type", loc="upper left", fontsize=10)
+
+    # Display the plot
+    plt.tight_layout()
+    plt.show()
+
+
+
 def residuals_analysis(df_residuals, x_var) -> None:
     """
     Scatterplot of interest variable vs. Score, with different residuals threshold.
@@ -406,7 +500,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
         x=x_var,
         y='Score',
         label='normal errors',
-        alpha=0.25,
+        alpha=0.4,
         ax=axs[0]
     )
 
@@ -433,7 +527,7 @@ def residuals_analysis(df_residuals, x_var) -> None:
         x=x_var,
         kde=True,
         label='all residuals',
-        alpha=0.25,
+        alpha=0.4,
         ax=axs[1]   
     )
 
