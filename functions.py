@@ -221,6 +221,26 @@ def fill_comparison_df(comparison_df: pd.DataFrame = None, metrics: str = None,
         f"test_{metrics}_std": model_metrics[f"test_{metrics}_std"],
     }
 
+
+def fill_tracking_df(tracking_df, sleep_classes, sampling_strategy, smote_k_neighbors, random_forest_train_score, random_forest_test_score, gboost_train_score, gboost_test_score):
+
+    max_idx = tracking_df.index.max()
+
+    if not tracking_df.loc[max_idx].isna().all():
+        max_idx += 1
+
+    append_idx = max_idx
+    print(append_idx)
+
+    tracking_df.loc[append_idx, 'sleep_classes'] = sleep_classes
+    tracking_df.loc[append_idx, 'sampling_strategy'] = sampling_strategy
+    tracking_df.loc[append_idx, 'smote_k_neighbors'] = smote_k_neighbors
+    tracking_df.loc[append_idx, 'random_forest_train_score'] = random_forest_train_score
+    tracking_df.loc[append_idx, 'random_forest_test_score'] = random_forest_test_score
+    tracking_df.loc[append_idx, 'gboost_train_score'] = gboost_train_score
+    tracking_df.loc[append_idx, 'gboost_test_score'] = gboost_test_score
+
+
 #########################################################################################################################################
 ########################################################## Plotting functions ###########################################################
 #########################################################################################################################################
@@ -996,11 +1016,12 @@ def random_forest_train_test(X: pd.DataFrame = None, y: pd.Series = None, test_s
 
     Example :
     ---------
+    >>> rf_params = {'n_estimators': 500, 'max_depth': 3'}
     >>> random_forest_train_test(X_train, X_test, y_train, y_test,
-                                 max_depth=3, random_state=42,
+                                 rf_params=rf_params, random_state=42,
                                  mlflow_reg=True, run_name="Base random forest model")
     >>> random_forest_train_test(X, y,
-                                 max_depth=3, random_state=42,
+                                 rf_params=rf_params, random_state=42,
                                  mlflow_reg=True, run_name="Base random forest model")
     """
 
@@ -1014,8 +1035,27 @@ def random_forest_train_test(X: pd.DataFrame = None, y: pd.Series = None, test_s
 
     perf_dict = {}
 
-    # Define parameters and train the model
-    rf = RandomForestRegressor(max_depth=rf_params['max_depth'], oob_score=True, random_state=random_state)
+    # Train the model with parameters specified in rf_params or otherwise with default ones.
+    rf = RandomForestRegressor(
+        n_estimators=rf_params.get('n_estimators', 100),
+        criterion=rf_params.get('criterion', 'squared_error'),
+        max_depth=rf_params.get('max_depth', None),
+        min_samples_split=rf_params.get('min_samples_split', 2),
+        min_samples_leaf=rf_params.get('min_samples_leaf', 1),
+        min_weight_fraction_leaf=rf_params.get('min_weight_fraction_leaf', 0.0),
+        max_features=rf_params.get('max_features', 1.0),
+        max_leaf_nodes=rf_params.get('max_leaf_nodes', None),
+        min_impurity_decrease=rf_params.get('min_impurity_decrease', 0.0),
+        bootstrap=rf_params.get('bootstrap', True), 
+        oob_score=rf_params.get('oob_score', False), 
+        n_jobs=rf_params.get('n_jobs', None),
+        random_state=random_state,
+        verbose=rf_params.get('verbose', 0),
+        warm_start=rf_params.get('warm_start', False),
+        ccp_alpha=rf_params.get('ccp_alpha', 0.0),
+        max_samples=rf_params.get('max_samples', None)
+)
+    
     rf.fit(X_train, y_train)
 
     # Compute metrics
@@ -1070,18 +1110,26 @@ def random_forest_cross_val(X: Union[pd.DataFrame, np.ndarray] = None, y: Union[
     """
 
     # Initialize the random forest with specified parameters if they exists, otherwise default parameters
-    if rf_params:
-        random_forest = RandomForestRegressor(
-            n_estimators=rf_params['n_estimators'],
-            max_depth=rf_params['max_depth'],
-            min_samples_leaf=rf_params['min_samples_leaf'],
-            oob_score=True,
-            random_state=random_state)
-    else:
-        random_forest = RandomForestRegressor(
-            oob_score=True,
-            random_state=random_state
-        )
+
+    random_forest = RandomForestRegressor(
+        n_estimators=rf_params.get('n_estimators', 100),
+        criterion=rf_params.get('criterion', 'squared_error'),
+        max_depth=rf_params.get('max_depth', None),
+        min_samples_split=rf_params.get('min_samples_split', 2),
+        min_samples_leaf=rf_params.get('min_samples_leaf', 1),
+        min_weight_fraction_leaf=rf_params.get('min_weight_fraction_leaf', 0.0),
+        max_features=rf_params.get('max_features', 1.0),
+        max_leaf_nodes=rf_params.get('max_leaf_nodes', None),
+        min_impurity_decrease=rf_params.get('min_impurity_decrease', 0.0),
+        bootstrap=rf_params.get('bootstrap', True), 
+        oob_score=rf_params.get('oob_score', False), 
+        n_jobs=rf_params.get('n_jobs', None),
+        random_state=random_state,
+        verbose=rf_params.get('verbose', 0),
+        warm_start=rf_params.get('warm_start', False),
+        ccp_alpha=rf_params.get('ccp_alpha', 0.0),
+        max_samples=rf_params.get('max_samples', None)
+    )
 
     perf_dict = compute_k_fold_cross_val_scores(X=X, y=y, model=random_forest,
                                                 random_state=random_state, k_fold=k_fold, stratified_k_fold=stratified_k_fold,
