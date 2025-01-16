@@ -18,7 +18,7 @@ from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor, GradientB
 
 from xgboost import XGBRegressor
 
-from sklearn.model_selection import train_test_split, cross_validate, KFold, StratifiedKFold
+from sklearn.model_selection import train_test_split, cross_validate, KFold, StratifiedKFold, RandomizedSearchCV
 
 from sklearn.metrics import get_scorer_names, mean_squared_error, mean_absolute_error, r2_score
 
@@ -224,14 +224,17 @@ def fill_comparison_df(comparison_df: pd.DataFrame = None, metrics: str = None,
 
 def fill_tracking_df(tracking_df, sleep_classes, sampling_strategy, smote_k_neighbors, random_forest_train_score, random_forest_test_score, gboost_train_score, gboost_test_score):
 
+    # Retrieve the latest index
     max_idx = tracking_df.index.max()
 
+    # If every column is filled at index, then add 1
     if not tracking_df.loc[max_idx].isna().all():
         max_idx += 1
 
+    # Index to write
     append_idx = max_idx
-    print(append_idx)
 
+    # Write in each column
     tracking_df.loc[append_idx, 'sleep_classes'] = sleep_classes
     tracking_df.loc[append_idx, 'sampling_strategy'] = sampling_strategy
     tracking_df.loc[append_idx, 'smote_k_neighbors'] = smote_k_neighbors
@@ -595,12 +598,12 @@ def mlflow_linreg(lr_model: LinearRegression, perf_dict: dict, run_name: str = N
         if register_dataset:
             mlflow.log_input(dataset, context='training') 
 
-        mlflow.log_metric("Train_rmse", perf_dict['train_rmse_mean'])
-        mlflow.log_metric("Test_rmse", perf_dict['test_rmse_mean'])
-        mlflow.log_metric("Train_mae", perf_dict['train_mae_mean'])
-        mlflow.log_metric("Test_mae", perf_dict['test_mae_mean'])
-        mlflow.log_metric("Train_R2", perf_dict['train_r2_mean'])
-        mlflow.log_metric("Test_R2", perf_dict['test_r2_mean'])
+        mlflow.log_metric("train_rmse", perf_dict['train_rmse_mean'])
+        mlflow.log_metric("test_rmse", perf_dict['test_rmse_mean'])
+        mlflow.log_metric("train_mae", perf_dict['train_mae_mean'])
+        mlflow.log_metric("test_mae", perf_dict['test_mae_mean'])
+        mlflow.log_metric("train_R2", perf_dict['train_r2_mean'])
+        mlflow.log_metric("test_R2", perf_dict['test_r2_mean'])
 
         mlflow.sklearn.log_model(lr_model, "Linear_regression")
 
@@ -640,12 +643,12 @@ def mlflow_rforest(rf_model: RandomForestRegressor, perf_dict: dict = None, run_
         mlflow.log_param("max_depth", rf_params['max_depth'])
 
         # Metrics
-        mlflow.log_metric("Train_rmse", perf_dict['train_rmse_mean'])
-        mlflow.log_metric("Test_rmse", perf_dict['test_rmse_mean'])
-        mlflow.log_metric("Train_mae", perf_dict['train_mae_mean'])
-        mlflow.log_metric("Test_mae", perf_dict['test_mae_mean'])
-        mlflow.log_metric("Train_R2", perf_dict['train_r2_mean'])
-        mlflow.log_metric("Test_R2", perf_dict['test_r2_mean'])
+        mlflow.log_metric("train_rmse", perf_dict['train_rmse_mean'])
+        mlflow.log_metric("test_rmse", perf_dict['test_rmse_mean'])
+        mlflow.log_metric("train_mae", perf_dict['train_mae_mean'])
+        mlflow.log_metric("test_mae", perf_dict['test_mae_mean'])
+        mlflow.log_metric("train_R2", perf_dict['train_r2_mean'])
+        mlflow.log_metric("test_R2", perf_dict['test_r2_mean'])
 
         mlflow.sklearn.log_model(rf_model, "Random_forest")
 
@@ -692,12 +695,12 @@ def mlflow_gboost(gboost_model: GradientBoostingRegressor, perf_dict: dict = Non
         mlflow.log_param("min_samples_leaf", gboost_params['min_samples_leaf'])
 
         # Metrics
-        mlflow.log_metric("Train_rmse", perf_dict['train_rmse_mean'])
-        mlflow.log_metric("Test_rmse", perf_dict['test_rmse_mean'])
-        mlflow.log_metric("Train_mae", perf_dict['train_mae_mean'])
-        mlflow.log_metric("Test_mae", perf_dict['test_mae_mean'])
-        mlflow.log_metric("Train_R2", perf_dict['train_r2_mean'])
-        mlflow.log_metric("Test_R2", perf_dict['test_r2_mean'])
+        mlflow.log_metric("train_rmse", perf_dict['train_rmse_mean'])
+        mlflow.log_metric("test_rmse", perf_dict['test_rmse_mean'])
+        mlflow.log_metric("train_mae", perf_dict['train_mae_mean'])
+        mlflow.log_metric("test_mae", perf_dict['test_mae_mean'])
+        mlflow.log_metric("train_R2", perf_dict['train_r2_mean'])
+        mlflow.log_metric("test_R2", perf_dict['test_r2_mean'])
 
         mlflow.sklearn.log_model(gboost_model, "Gradient Boosting")
 
@@ -745,12 +748,12 @@ def mlflow_xgboost(xgboost_model: XGBRegressor, perf_dict: dict = None, run_name
         mlflow.log_param("n_estimators", xgboost_params['n_estimators'])
 
         # Metrics
-        mlflow.log_metric("Train_rmse", perf_dict['train_rmse_mean'])
-        mlflow.log_metric("Test_rmse", perf_dict['test_rmse_mean'])
-        mlflow.log_metric("Train_mae", perf_dict['train_mae_mean'])
-        mlflow.log_metric("Test_mae", perf_dict['test_mae_mean'])
-        mlflow.log_metric("Train_R2", perf_dict['train_r2_mean'])
-        mlflow.log_metric("Test_R2", perf_dict['test_r2_mean'])
+        mlflow.log_metric("train_rmse", perf_dict['train_rmse_mean'])
+        mlflow.log_metric("test_rmse", perf_dict['test_rmse_mean'])
+        mlflow.log_metric("train_mae", perf_dict['train_mae_mean'])
+        mlflow.log_metric("test_mae", perf_dict['test_mae_mean'])
+        mlflow.log_metric("train_R2", perf_dict['train_r2_mean'])
+        mlflow.log_metric("test_R2", perf_dict['test_r2_mean'])
 
         mlflow.set_tag('Scoring method', 'K-Fold')
         
@@ -843,6 +846,60 @@ def compute_k_fold_cross_val_scores(X: Union[pd.DataFrame, np.ndarray] = None, y
     
     return perf_dict
 
+
+def randomized_search_random_forest(X_train: pd.DataFrame = None, y_train: pd.Series = None, random_state: int = 42):
+    """ Return best parameters via the Randomized Search Cross Validation method with already defined parameters """
+
+    rf_params = {
+        'n_estimators': [10, 20, 30, 50, 100, 200, 300, 500],
+        'max_depth': [1, 2, 3, 4, 5, 6, 7],
+        'min_samples_leaf': [0.01, 0.02, 0.03, 0.05, 0.1, 0.15]
+    }
+
+    clf_rf = RandomizedSearchCV(
+        estimator=RandomForestRegressor(random_state=random_state),
+        param_distributions=rf_params,
+        n_iter=50,
+        scoring='neg_root_mean_squared_error',
+        n_jobs=-2,
+        refit='neg_root_mean_squared_error',
+        cv=5,
+        random_state=random_state,
+        return_train_score=True
+    )
+
+    clf_rf.fit(X_train, y_train)
+
+    return clf_rf.best_params_
+
+
+def randomized_search_gradient_boosting(X_train: pd.DataFrame = None, y_train: pd.Series = None, random_state: int = 42):
+
+    gboost_params = {
+        'learning_rate': [0.001, 0.005, 0.01, 0.02, 0.05],
+        'n_estimators': [100, 200, 300, 400, 500, 600, 700],
+        'max_depth': [1, 2, 3, 4, 5, 6, 7],
+        'min_samples_split': [0.01, 0.02, 0.03, 0.05, 0.1],
+        'min_samples_leaf': [0.01, 0.02, 0.03, 0.05, 0.1],
+        'ccp_alpha' : [0, 0.01, 0.02, 0.03, 0.05],
+    }
+
+    clf_gboost = RandomizedSearchCV(
+        estimator=GradientBoostingRegressor(random_state=random_state),
+        param_distributions=gboost_params,
+        n_iter=50,
+        scoring='neg_root_mean_squared_error',
+        n_jobs=-2,
+        refit='neg_root_mean_squared_error',
+        cv=5,
+        random_state=random_state,
+        return_train_score=True
+    )
+
+    clf_gboost.fit(X_train, y_train)
+
+    return clf_gboost.best_params_
+
 #########################################################################################################################################
 ####################################################### Model training functions ########################################################
 #########################################################################################################################################
@@ -901,11 +958,11 @@ def lin_reg_train_test(X: pd.DataFrame = None, y: pd.Series = None, test_size: i
 
     lr_y_hat_train = lr.predict(X_train)
 
-    perf_dict['Train_rmse'], perf_dict['Train_mae'], perf_dict['Train_R2'], perf_dict['Train_R2_adjusted'] = regression_metrics(y_train, lr_y_hat_train, X_train)
+    perf_dict['train_rmse'], perf_dict['train_mae'], perf_dict['train_R2'], perf_dict['train_R2_adjusted'] = regression_metrics(y_train, lr_y_hat_train, X_train)
 
     lr_y_hat_test = lr.predict(X_test)
 
-    perf_dict['Test_rmse'], perf_dict['Test_mae'], perf_dict['Test_R2'], perf_dict['Test_R2_adjusted'] = regression_metrics(y_test, lr_y_hat_test, X_test)
+    perf_dict['test_rmse'], perf_dict['test_mae'], perf_dict['test_R2'], perf_dict['test_R2_adjusted'] = regression_metrics(y_test, lr_y_hat_test, X_test)
 
     if mlflow_register:
         if not run_name:
@@ -1061,11 +1118,11 @@ def random_forest_train_test(X: pd.DataFrame = None, y: pd.Series = None, test_s
     # Compute metrics
     rf_y_hat_train = rf.predict(X_train)
 
-    perf_dict['Train_rmse'], perf_dict['Train_mae'], perf_dict['Train_R2'], perf_dict['rf_adjusted_r2_train'] = regression_metrics(y_train, rf_y_hat_train, X_train)
+    perf_dict['train_rmse'], perf_dict['train_mae'], perf_dict['train_R2'], perf_dict['rf_train_r2_adjusted'] = regression_metrics(y_train, rf_y_hat_train, X_train)
 
     rf_y_hat_test = rf.predict(X_test)
 
-    perf_dict['Test_rmse'], perf_dict['Test_mae'], perf_dict['Test_R2'], perf_dict['rf_adjusted_r2_test'] = regression_metrics(y_test, rf_y_hat_test, X_test)
+    perf_dict['test_rmse'], perf_dict['test_mae'], perf_dict['test_R2'], perf_dict['rf_test_r2_adjusted'] = regression_metrics(y_test, rf_y_hat_test, X_test)
 
     # run mlflow 
     if mlflow_register:
@@ -1231,25 +1288,41 @@ def gradient_boosting_train_test(X: pd.DataFrame = None, y: pd.Series = None, te
     if not gboost_params or not isinstance(gboost_params, dict):
         raise ValueError("Model parameters are not provided or are not in the correct format (dict)")
 
-    # Define parameters and train the model
+    # Train the model with parameters specified in gboost_params or otherwise with default ones.
     gboost = GradientBoostingRegressor(
-        learning_rate = gboost_params['learning_rate'],
-        n_estimators = gboost_params['n_estimators'],
-        max_depth = gboost_params['max_depth'],
-        # min_samples_leaf = gboost_params['min_samples_leaf'],
-        verbose = gboost_params['verbose'],
-        random_state = random_state
-)
+        loss=gboost_params.get('loss', 'squared_error'),
+        learning_rate=gboost_params.get('learning_rate', 0.1),
+        n_estimators=gboost_params.get('n_estimators', 100),
+        subsample=gboost_params.get('subsample', 1.0),
+        criterion=gboost_params.get('criterion', 'friedman_mse'),
+        min_samples_split=gboost_params.get('min_samples_split', 2),
+        min_samples_leaf=gboost_params.get('min_samples_leaf', 1),
+        min_weight_fraction_leaf=gboost_params.get('min_weight_fraction_leaf', 0.0),
+        max_depth=gboost_params.get('max_depth', 3),
+        min_impurity_decrease=gboost_params.get('min_impurity_decrease', 0.0),
+        init=gboost_params.get('init', None),
+        random_state=random_state,
+        max_features=gboost_params.get('max_features', None),
+        alpha=gboost_params.get('alpha', 0.9),
+        verbose=gboost_params.get('verbose', 0),
+        max_leaf_nodes=gboost_params.get('max_leaf_nodes', None),
+        warm_start=gboost_params.get('warm_start', False),
+        validation_fraction=gboost_params.get('validation_fraction', 0.1),
+        n_iter_no_change=gboost_params.get('n_iter_no_change', None),
+        tol=gboost_params.get('tol', 1e-4),
+        ccp_alpha=gboost_params.get('ccp_alpha', 0.0)
+    )
+    
     gboost.fit(X_train, y_train)
     
     # Compute metrics
     gboost_y_hat_train = gboost.predict(X_train)
 
-    perf_dict['gboost_rmse_train'], perf_dict['gboost_mae_train'], perf_dict['gboost_r2_train'], perf_dict['gboost_adjusted_r2_train'] = regression_metrics(y_train, gboost_y_hat_train, X_train)
+    perf_dict['train_rmse'], perf_dict['train_mae'], perf_dict['train_R2'], perf_dict['gboost_train_r2_adjusted'] = regression_metrics(y_train, gboost_y_hat_train, X_train)
 
     gboost_y_hat_test = gboost.predict(X_test)
 
-    perf_dict['gboost_rmse_test'], perf_dict['gboost_mae_test'], perf_dict['gboost_r2_test'], perf_dict['gboost_adjusted_r2_test'] = regression_metrics(y_test, gboost_y_hat_test, X_test)
+    perf_dict['test_rmse'], perf_dict['test_mae'], perf_dict['test_R2'], perf_dict['gboost_test_r2_adjusted'] = regression_metrics(y_test, gboost_y_hat_test, X_test)
 
     # run mlflow 
     if mlflow_register:
@@ -1303,19 +1376,29 @@ def gradient_boosting_cross_val(X: Union[pd.DataFrame, np.ndarray] = None, y: Un
     """
 
     # Initialize the gradient boosting with specified parameters if they exists, otherwise default parameters
-    if gboost_params:
-        gboost = GradientBoostingRegressor(
-            learning_rate = gboost_params['learning_rate'],
-            n_estimators = gboost_params['n_estimators'],
-            max_depth = gboost_params['max_depth'],
-            min_samples_leaf = gboost_params['min_samples_leaf'],
-            verbose = gboost_params['verbose'],
-            random_state = random_state
-        )
-    else:
-        gboost = GradientBoostingRegressor(
-            random_state=random_state
-        )
+    gboost = GradientBoostingRegressor(
+        loss=gboost_params.get('loss', 'squared_error'),
+        learning_rate=gboost_params.get('learning_rate', 0.1),
+        n_estimators=gboost_params.get('n_estimators', 100),
+        subsample=gboost_params.get('subsample', 1.0),
+        criterion=gboost_params.get('criterion', 'friedman_mse'),
+        min_samples_split=gboost_params.get('min_samples_split', 2),
+        min_samples_leaf=gboost_params.get('min_samples_leaf', 1),
+        min_weight_fraction_leaf=gboost_params.get('min_weight_fraction_leaf', 0.0),
+        max_depth=gboost_params.get('max_depth', 3),
+        min_impurity_decrease=gboost_params.get('min_impurity_decrease', 0.0),
+        init=gboost_params.get('init', None),
+        random_state=random_state,
+        max_features=gboost_params.get('max_features', None),
+        alpha=gboost_params.get('alpha', 0.9),
+        verbose=gboost_params.get('verbose', 0),
+        max_leaf_nodes=gboost_params.get('max_leaf_nodes', None),
+        warm_start=gboost_params.get('warm_start', False),
+        validation_fraction=gboost_params.get('validation_fraction', 0.1),
+        n_iter_no_change=gboost_params.get('n_iter_no_change', None),
+        tol=gboost_params.get('tol', 1e-4),
+        ccp_alpha=gboost_params.get('ccp_alpha', 0.0)
+    )
     
     perf_dict = compute_k_fold_cross_val_scores(X=X, y=y, model=gboost,
                                                 random_state=random_state, k_fold=k_fold, stratified_k_fold=stratified_k_fold,
