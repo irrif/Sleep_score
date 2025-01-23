@@ -1138,7 +1138,7 @@ def random_forest_train_test(X: pd.DataFrame = None, y: pd.Series = None, test_s
 
 
 def random_forest_cross_val(X: Union[pd.DataFrame, np.ndarray] = None, y: Union[np.ndarray, pd.Series] = None,
-                            rf_params: dict = None, random_state: int = 42,
+                            rf_params: dict = {}, random_state: int = 42,
                             k_fold: bool = False, stratified_k_fold: bool = False,
                             n_splits: int = 5, scoring: Union[str, tuple] = None, return_train_score: bool = False,
                             mlflow_register: bool = False, register_dataset: bool = False, run_name: str = '', **kwargs) -> dict:
@@ -1347,7 +1347,7 @@ def gradient_boosting_train_test(X: pd.DataFrame = None, y: pd.Series = None, te
 
 
 def gradient_boosting_cross_val(X: Union[pd.DataFrame, np.ndarray] = None, y: Union[np.ndarray, pd.Series] = None,
-                                gboost_params: dict = None, random_state: int = 42,
+                                gboost_params: dict = {}, random_state: int = 42,
                                 k_fold: bool = False, stratified_k_fold: bool = False,
                                 n_splits: int = 5, scoring: Union[str, tuple] = None, return_train_score: bool = False,
                                 mlflow_register: bool = False, register_dataset: bool = False, run_name: str = '', **kwargs) -> dict:
