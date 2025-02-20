@@ -24,7 +24,6 @@ The final model provides a reliable prediction of the sleep score, with performa
 
 ## Limitations and Future Work
 The biggest limitation of this model is the amount of data available (400 rows, one per day), and consequently the problems this creates for learning.
-- Performs a SMOTE on the least represented sleep score interval (40 to 60).
 - Exploring other sources of sleep-related data to enhance model accuracy.
 
 ## Contributions
